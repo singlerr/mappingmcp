@@ -1,16 +1,42 @@
 services:
-  mappingmcp:
+  # stdio transport (for local development with MCP clients)
+  mappingmcp-stdio:
     build: .
-    container_name: mappingmcp-server
-    # Use stdio transport for MCP
-    stdin_open: false
+    container_name: mappingmcp-stdio
+    environment:
+      - MCP_TRANSPORT=stdio
+    stdin_open: true
     tty: true
-    # Persist cache between restarts
     volumes:
       - mapping-cache:/root/.cache/mappingmcp
-    # Optional: expose if using HTTP transport
+
+  # SSE transport (Server-Sent Events)
+  mappingmcp-sse:
+    build: .
+    container_name: mappingmcp-sse
+    environment:
+      - MCP_TRANSPORT=sse
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8080
     ports:
       - "8080:8080"
+    volumes:
+      - mapping-cache:/root/.cache/mappingmcp
+    restart: unless-stopped
+
+  # Streamable HTTP transport
+  mappingmcp-http:
+    build: .
+    container_name: mappingmcp-http
+    environment:
+      - MCP_TRANSPORT=streamable-http
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8080
+    ports:
+      - "8081:8080"
+    volumes:
+      - mapping-cache:/root/.cache/mappingmcp
+    restart: unless-stopped
 
 volumes:
   mapping-cache:
