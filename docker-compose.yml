@@ -1,0 +1,16 @@
+services:
+  mappingmcp:
+    build: .
+    container_name: mappingmcp-server
+    # Use stdio transport for MCP
+    stdin_open: false
+    tty: true
+    # Persist cache between restarts
+    volumes:
+      - mapping-cache:/root/.cache/mappingmcp
+    # Optional: expose if using HTTP transport
+    ports:
+      - "8080:8080"
+
+volumes:
+  mapping-cache:
